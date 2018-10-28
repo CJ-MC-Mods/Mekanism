@@ -48,6 +48,7 @@ public abstract class TileEntityBasicBlock extends TileEntity implements ITileNe
 	public HashSet<EntityPlayer> playersUsing = new HashSet<>();
 
 	/** A timer used to send packets to clients. */
+	private boolean firstTick = true;
 	public int ticker;
 
 	public boolean redstone = false;
@@ -60,6 +61,10 @@ public abstract class TileEntityBasicBlock extends TileEntity implements ITileNe
 	@Override
 	public void update()
 	{
+		if(firstTick) {
+			markDirty();
+			firstTick = false;
+		}
 		if(!world.isRemote && general.destroyDisabledBlocks)
 		{
 			MachineType type = BlockStateMachine.MachineType.get(getBlockType(), getBlockMetadata());
@@ -100,12 +105,6 @@ public abstract class TileEntityBasicBlock extends TileEntity implements ITileNe
 		super.updateContainingBlockInfo();
 		
 		onAdded();
-	}
-	
-	@Override
-	public void onChunkLoad()
-	{
-		markDirty();
 	}
 
 	public void open(EntityPlayer player)
